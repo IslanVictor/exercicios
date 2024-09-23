@@ -1,0 +1,141 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Calculadora de IMC',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: IMCScreen(),
+    );
+  }
+}
+
+class IMCScreen extends StatefulWidget {
+  const IMCScreen({Key? key}) : super(key: key); // Adicionar o parâmetro 'key'
+
+  @override
+  _IMCScreenState createState() => _IMCScreenState();
+}
+
+class _IMCScreenState extends State<IMCScreen> {
+  final _pesoController = TextEditingController();
+  final _alturaController = TextEditingController();
+  String _resultado = '';
+  String _mensagemErro = '';
+
+  void _calcularIMC() {
+    setState(() {
+      _mensagemErro = '';
+    });
+    double peso = double.tryParse(_pesoController.text) ?? 0;
+    double altura = double.tryParse(_alturaController.text) ?? 0;
+    if (peso > 0 && altura > 0) {
+      double imc = peso / (altura * altura);
+      _resultado = 'Seu IMC é: $imc\n';
+      if (imc < 18.5) {
+        _resultado += 'Você está abaixo do peso.';
+      } else if (imc < 25) {
+        _resultado += 'Você está no peso normal.';
+      } else if (imc < 30) {
+        _resultado += 'Você está com sobrepeso.';
+      } else if (imc < 35) {
+        _resultado += 'Você está com obesidade grau I.';
+      } else if (imc < 40) {
+        _resultado += 'Você está com obesidade grau II.';
+      } else {
+        _resultado += 'Você está com obesidade grau III.';
+      }
+    } else {
+      _mensagemErro = 'Por favor, insira valores válidos para peso e altura.';
+    }
+    setState(() {});
+  }
+
+  void _limparCampos() {
+    _pesoController.clear();
+    _alturaController.clear();
+    _resultado = '';
+    _mensagemErro = '';
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: const Key('scaffold_key'), // Adicionar key
+      appBar: AppBar(
+        key: const Key('appbar_key'), // Adicionar key
+        title: const Text('Calculadora de IMC'),
+      ),
+      body: Padding(
+        key: const Key('padding_key'), // Adicionar key
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          key: const Key('column_key'), // Adicionar key
+          children: <Widget>[
+            TextField(
+              key: const Key('peso_textfield_key'), // Adicionar key
+              controller: _pesoController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Peso (kg)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              key: const Key('altura_textfield_key'), // Adicionar key
+              controller: _alturaController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Altura (m)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            Row(
+              key: const Key('row_key'), // Adicionar key
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  key: const Key('calcular_button_key'), // Adicionar key
+                  onPressed: _calcularIMC,
+                  child: const Row(
+                    children: [
+                      const Icon(Icons.calculate),
+                      const Text('Calcular IMC'),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  key: const Key('limpar_button_key'), // Adicionar key
+                  onPressed: _limparCampos,
+                  child: const Row(
+                    children: [
+                      const Icon(Icons.clear),
+                      const Text('Limpar'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16.0),
+            _mensagemErro.isNotEmpty
+                ? Text(
+                    _mensagemErro,
+                    style: const TextStyle(color: Colors.red),
+                  )
+                : Text(_resultado, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      ),
+    );
+  }
+}
